@@ -449,9 +449,12 @@ namespace WooCommerceNET
                 };
 
                 DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T), settings);
-                MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
-                T obj = (T)ser.ReadObject(stream);
-                stream.Dispose();
+                while (jsonString.Contains('﻿'))
+                    jsonString = jsonString.Remove(jsonString.IndexOf('﻿'), 1);//NO esta en blanco es un caracter raro que manda el iis (Unicode FEFF)
+                T obj = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(jsonString);
+                //MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+                //T obj = (T)ser.ReadObject(stream);
+                //stream.Dispose();
                 return obj;
             }
             catch (Exception ex)
